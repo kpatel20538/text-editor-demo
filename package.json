@@ -8,14 +8,19 @@
     "start": "next start"
   },
   "dependencies": {
+    "@zeit/next-css": "^1.0.1",
     "bulma": "^0.8.2",
-    "next": "^9.3.3",
+    "dompurify": "^2.0.11",
+    "mjml": "^4.6.3",
+    "monaco-editor": "^0.20.0",
+    "monaco-editor-webpack-plugin": "^1.9.0",
+    "next": "^9.4.1",
+    "next-fonts": "^1.1.0",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
-    "react-monaco-editor": "^0.36.0"
+    "react-monaco-editor": "^0.36.0",
+    "use-debounce": "^3.4.2",
+    "yaml": "^1.10.0"
   },
-  "devDependencies": {
-    "monaco-editor-webpack-plugin": "^1.9.0",
-    "next-transpile-modules": "^3.3.0"
-  }
+  "devDependencies": {}
 }
