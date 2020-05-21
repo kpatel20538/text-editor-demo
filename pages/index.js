@@ -3,55 +3,46 @@ const MonacoEditor = dynamic(() => import("react-monaco-editor"), {
   ssr: false,
 });
 
-import yaml from "yaml";
-import { useState, useEffect } from "react";
-
-const getWorkerUrl = (moduleId, label) => {
-  if (label === "json") return "_next/static/json.worker.js";
-  if (label === "graphql") return "_next/static/graphql.worker.js";
-  if (label === "css") return "_next/static/css.worker.js";
-  if (label === "html") return "_next/static/html.worker.js";
-  if (label === "typescript" || label === "javascript")
-    return "_next/static/ts.worker.js";
-  return "_next/static/editor.worker.js";
-};
+import {
+  useStore,
+  getAllModes,
+  getCurrentBuffer,
+  setCurrentBuffer,
+  setCurrentMode,
+  compile,
+} from "../utils/store";
+import Tabs from "../components/Tabs";
+import { getMonacoProps } from "../utils/monaco";
+import Button from "../components/Button";
 
 const Home = () => {
-  const [templateCode, setTemplateCode] = useState(
-    JSON.stringify({ home: 1, dom: 3 }, null, 2)
-  );
-
-  const [outputCode, setOutcodeCode] = useState("");
-  const [isDanger, setIsDanger] = useState(false);
-
-  useEffect(() => {
-    try {
-      setOutcodeCode(yaml.stringify(JSON.parse(templateCode)));
-      setIsDanger(false);
-    } catch {
-      setIsDanger(true);
-    }
-  }, [templateCode]);
+  const [state, dispatch] = useStore();
 
   return (
     <div className="section">
       <div className="container">
         <div className="columns">
           <div className="column is-half">
+            <Tabs
+              tabs={getAllModes(state)}
+              activeTab={state.currentMode}
+              onTabClick={(tab) => dispatch(setCurrentMode({ mode: tab }))}
+            />
             <MonacoEditor
-              language="javascript"
+              key={state.currentMode}
               theme="vs-dark"
-              value={templateCode}
-              onChange={setTemplateCode}
-              editorDidMount={() => {
-                window.MonacoEnvironment.getWorkerUrl = getWorkerUrl;
-              }}
               height="800px"
+              value={getCurrentBuffer(state)}
+              onChange={(value) =>
+                dispatch(setCurrentBuffer({ buffer: value }))
+              }
+              {...getMonacoProps(state)}
             />
           </div>
           <div className="column is-half">
-            <div className={`message ${isDanger ? "is-danger" : ""}`}>
-              <pre className="message-body">{outputCode}</pre>
+            <Button title="Compile" onClick={() => dispatch(compile(state))} />
+            <div className="box">
+              <div dangerouslySetInnerHTML={{__html: state.output}} />
             </div>
           </div>
         </div>
