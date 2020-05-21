@@ -57,6 +57,7 @@ export default async (req, res) => {
   try {
     res.status(200).json(await renderTemplate(req.body));  
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: error.message });
   }
 };
