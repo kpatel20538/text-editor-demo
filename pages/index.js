@@ -26,7 +26,7 @@ const Home = () => {
             <Tabs
               tabs={getAllModes(state)}
               activeTab={state.currentMode}
-              onTabClick={(tab) => dispatch(setCurrentMode({ mode: tab }))}
+              onTabChange={(tab) => dispatch(setCurrentMode({ mode: tab }))}
             />
             <MonacoEditor
               key={state.currentMode}

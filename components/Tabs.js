@@ -1,12 +1,14 @@
-export default ({ tabs, activeTab, onTabClick }) => {
+import classNames from "classnames";
+
+export default ({ tabs, activeTab, onTabChange }) => {
   return (
     <div className="tabs">
       <ul>
         {tabs.map((tab) => (
           <li
             key={tab}
-            className={tab === activeTab ? "is-active" : ""}
-            onClick={() => onTabClick(tab)}
+            className={classNames({ "is-active": tab === activeTab })}
+            onClick={() => onTabChange(tab)}
           >
             <a>{tab}</a>
           </li>
