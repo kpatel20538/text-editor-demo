@@ -46,8 +46,8 @@ export const compile = (state) => async (dispatch) => {
         ...state.buffers,        
       }),
     });
-    const { output } = await response.json();
-    dispatch(setOutput({ value: output }));
+    const { html } = await response.json();
+    dispatch(setOutput({ value: html }));
   } catch (err) {
     console.error(err);
     dispatch(reportError({ value: "Something went wrong" }));
