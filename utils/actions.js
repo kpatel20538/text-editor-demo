@@ -22,12 +22,13 @@ const fetchApi  = async (endpoint, body) => {
   return response.json();
 }
 
-const {
+export const {
+  setCurrentMode,
+  setCurrentBuffer,
   startLoading,
   endLoading,
-  reportError,
   setOutput,
-  ...base,
+  reportError
 } = createActionFactories(resolvers);
 
 export const compile = (buffers) => async (dispatch) => {
@@ -42,8 +43,3 @@ export const compile = (buffers) => async (dispatch) => {
     dispatch(endLoading());
   }
 };
-
-export default {
-  compile,
-  ...base
-}

@@ -126,6 +126,7 @@ export default {
     query: defaultQuery,
     variables: defaultVariables,
   },
+  called: false,
   loading: false,
   error: null,
   output: "",

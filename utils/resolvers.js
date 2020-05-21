@@ -1,24 +1,34 @@
-export const setCurrentMode = (state, action) => {
+const setCurrentMode = (state, action) => {
   state.currentMode = action.mode;
 };
 
-export const setCurrentBuffer = (state, action) => {
+const setCurrentBuffer = (state, action) => {
   state.buffers[state.currentMode] = action.buffer;
 };
 
-export const startLoading = (state) => {
+const startLoading = (state) => {
   state.loading = true;
   state.error = null;
 };
 
-export const endLoading = (state) => {
+const endLoading = (state) => {
+  state.called = true;
   state.loading = false;
 };
 
-export const setOutput = (state, action) => {
+const setOutput = (state, action) => {
   state.output = action.value;
 };
 
-export const reportError = (state, action) => {
+const reportError = (state, action) => {
   state.error = action.value;
 };
+
+export default {
+  setCurrentMode,
+  setCurrentBuffer,
+  startLoading,
+  endLoading,
+  setOutput,
+  reportError
+}

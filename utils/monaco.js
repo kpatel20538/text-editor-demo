@@ -1,7 +1,7 @@
-export const getMonacoProps = (state) => {
+export const getMonacoProps = (mode) => {
   return {
     template: { language: "javascript" },
     query: { language: "graphql" },
     variables: { language: "json" },
-  }[state.currentMode];
+  }[mode];
 };

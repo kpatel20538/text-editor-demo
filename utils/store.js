@@ -8,23 +8,29 @@ const createReducer = (resolvers) => (state, action) => {
     : state;
 }
 
+const createAsyncDispatcher = (dispatch) => {
+  const asyncDispatch = async (action) => {
+    if (typeof action === "function") {
+      await action(asyncDispatch);
+    } else if (Array.isArray(action)) {
+      for (const subAction of action) {
+        await asyncDispatch(subAction);
+      }
+    } else {
+      dispatch(action);
+    }
+  }
+  return asyncDispatch;
+}
+
 export const useStore = ({ resolvers, initialState }) => {
   const [state, dispatch] = useReducer(
     createReducer(resolvers), 
     initialState
   );
 
-  const asyncCompositeDispatch = async (action) => {
-    if (typeof action === "function") {
-      await action(asyncCompositeDispatch);
-    } else if (Array.isArray(action)) {
-      for (const subAction of action) {
-        await asyncCompositeDispatch(subAction);
-      }
-    } else {
-      dispatch(action);
-    }
-  };
-
-  return [state, asyncCompositeDispatch];
+  return [
+    state, 
+    createAsyncDispatcher(dispatch)
+  ];
 };
