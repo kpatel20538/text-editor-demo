@@ -1,9 +1,12 @@
 import dynamic from "next/dynamic";
+import AppLayout from "../components/AppLayout";
 import Tabs from "../components/Tabs";
 import Button from "../components/Button";
 import {
   useStore,
 } from "../utils/store";
+import resolvers from '../utils/resolvers';
+import initialState from '../utils/initialState';
 import {
   getAllModes,
   getCurrentMode,
@@ -17,11 +20,7 @@ import {
   setCurrentMode,
   compile,
 } from '../utils/actions'
-import resolvers from '../utils/resolvers';
-import initialState from '../utils/initialState';
-
 import { getMonacoProps } from "../utils/monaco";
-import AppLayout from "../components/AppLayout";
 
 const MonacoEditor = dynamic(() => import("react-monaco-editor"), {
   ssr: false,
