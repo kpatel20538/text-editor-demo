@@ -13,7 +13,7 @@ const resolvers = {
     state.error = null;
   },
   endLoading: (state) => {
-    state.loading = true;
+    state.loading = false;
   },
   setOutput: (state, action) => {
     state.output = action.value;
@@ -59,8 +59,8 @@ export const compile = (state) => async (dispatch) => {
 const defaultTemplate = `
 import React from 'react';
 
-const NEWLINE_PATTERN = /((<br\s*\/?>)|(\n\r?)|\r)+/;
-const WHITESPACE_PATTERN = /^(\s|(<br\s*\/?>)|(\n\r?)|\r)*$/;
+const NEWLINE_PATTERN = /((<br\\s*\\/?>)|(\\n\\r?)|\\r)+/;
+const WHITESPACE_PATTERN = /^(\\s|(<br\\s*\\/?>)|(\\n\\r?)|\\r)*$/;
 
 const byParagraph = (text) => (
   text.split(NEWLINE_PATTERN)
@@ -115,8 +115,8 @@ const Body = ({ data }) => (
         {data.Media.season} {data.Media.seasonYear}
       </mj-text>
       {byParagraph(data.Media.description)
-        .map(paragraph => (
-          <mj-text color="#525252">
+        .map((paragraph, index) => (
+          <mj-text color="#525252" key={index}>
             {paragraph}
           </mj-text>
         ))
@@ -193,6 +193,8 @@ export const useStore = () => {
         query: defaultQuery,
         variables: defaultVariables,
       },
+      loading: false,
+      error: null,
       output: '',
       /* settings: {
         url: "https://anilist.co/graphiql",

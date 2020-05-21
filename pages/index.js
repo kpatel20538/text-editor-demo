@@ -1,8 +1,6 @@
 import dynamic from "next/dynamic";
-const MonacoEditor = dynamic(() => import("react-monaco-editor"), {
-  ssr: false,
-});
-
+import Tabs from "../components/Tabs";
+import Button from "../components/Button";
 import {
   useStore,
   getAllModes,
@@ -11,43 +9,48 @@ import {
   setCurrentMode,
   compile,
 } from "../utils/store";
-import Tabs from "../components/Tabs";
 import { getMonacoProps } from "../utils/monaco";
-import Button from "../components/Button";
+import AppLayout from "../components/AppLayout";
+
+const MonacoEditor = dynamic(() => import("react-monaco-editor"), {
+  ssr: false,
+});
 
 const Home = () => {
   const [state, dispatch] = useStore();
 
   return (
-    <div className="section">
-      <div className="container">
-        <div className="columns">
-          <div className="column is-half">
-            <Tabs
-              tabs={getAllModes(state)}
-              activeTab={state.currentMode}
-              onTabChange={(tab) => dispatch(setCurrentMode({ mode: tab }))}
-            />
-            <MonacoEditor
-              key={state.currentMode}
-              theme="vs-dark"
-              height="800px"
-              value={getCurrentBuffer(state)}
-              onChange={(value) =>
-                dispatch(setCurrentBuffer({ buffer: value }))
-              }
-              {...getMonacoProps(state)}
-            />
-          </div>
-          <div className="column is-half">
-            <Button title="Compile" onClick={() => dispatch(compile(state))} />
-            <div className="box">
-              <div dangerouslySetInnerHTML={{__html: state.output}} />
-            </div>
-          </div>
-        </div>
+    <main>
+      <div className="buttons">
+        <Button
+          title="Compile"
+          onClick={() => dispatch(compile(state))}
+          isLoading={state.loading}
+          isSuccess={!state.loading && !state.error}
+          isDanger={!state.loading && state.error}
+        />
       </div>
-    </div>
+      <AppLayout>
+        <div className="column is-half">
+          <Tabs
+            tabs={getAllModes(state)}
+            activeTab={state.currentMode}
+            onTabChange={(tab) => dispatch(setCurrentMode({ mode: tab }))}
+          />
+          <MonacoEditor
+            key={state.currentMode}
+            theme="vs-dark"
+            height="800px"
+            value={getCurrentBuffer(state)}
+            onChange={(value) => dispatch(setCurrentBuffer({ buffer: value }))}
+            {...getMonacoProps(state)}
+          />
+        </div>
+        <div className="column is-half">
+          <div dangerouslySetInnerHTML={{ __html: state.output }} />
+        </div>
+      </AppLayout>
+    </main>
   );
 };
 
