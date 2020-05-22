@@ -63,8 +63,8 @@ const Home = () => {
               {...getMonacoProps(state)}
             />
           </div>
-          <div className="column is-half">
-            <div dangerouslySetInnerHTML={{ __html: getOutputDocument(state) }} />
+          <div className="column is-half box">
+            <iframe sandbox="" srcDoc={getOutputDocument(state)} />
           </div>
         </div>
       </section>
@@ -86,6 +86,11 @@ const Home = () => {
         .container {
           flex: 1;
           display: flex;
+        }
+
+        iframe {
+          width: 100%;
+          height: 100%;
         }
       `}</style>
     </main>

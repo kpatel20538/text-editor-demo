@@ -1,3 +1,3 @@
 export default `{
-  "id": 1
+  "search": "Your Name"
 }`;

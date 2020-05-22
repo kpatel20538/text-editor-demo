@@ -1,6 +1,7 @@
-export default `query MediaQuery($id: Int!) {
-  Media(id: $id) {
+export default `query MediaQuery($search: String!) {
+  Media(search: $search) {
     title {
+      english
       userPreferred
     }
     description
@@ -11,6 +12,11 @@ export default `query MediaQuery($id: Int!) {
     coverImage {
       large
       color
+    }
+    startDate {
+      year
+      month
+      day
     }
   }
 }
