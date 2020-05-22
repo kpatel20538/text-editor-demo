@@ -1,9 +1,9 @@
 import dynamic from "next/dynamic";
 import Tabs from "../components/Tabs";
 import Button from "../components/Button";
-import { useStore } from "../utils/store";
-import resolvers from "../utils/resolvers";
-import initialState from "../utils/initialState";
+import { useStore } from "../model/store";
+import resolvers from "../model/resolvers";
+import initialState from "../model/initialState";
 import {
   getAllModes,
   getCurrentMode,
@@ -11,14 +11,14 @@ import {
   getIsLoading,
   getHasError,
   getIsSuccess,
-} from "../utils/selectors";
+  getMonacoProps,
+} from "../model/selectors";
 import {
   setCurrentBuffer,
   setCurrentMode,
   compileTemplate,
   dismissNotification,
-} from "../utils/actions";
-import { getMonacoProps } from "../utils/monaco";
+} from "../model/actions";
 import Notifications from "../components/Notifications";
 
 const MonacoEditor = dynamic(() => import("react-monaco-editor"), {
@@ -52,7 +52,6 @@ const Home = () => {
           </div>
         </div>
       </nav>
-      
       <section className="section">
         <div className="container">
           <div className="column is-half">
@@ -75,7 +74,9 @@ const Home = () => {
           </div>
         </div>
       </section>
-      <footer className="footer"> React + GraphQL + mjml </footer>
+      <footer className="footer">
+        Data sourced from <a href="https://anilist.co">AniList GraphQL API</a>
+      </footer>
       <Notifications
         notifications={state.notifications}
         onDismiss={(idx) => dispatch(dismissNotification({ idx }))}
