@@ -17,10 +17,10 @@ export const {
   dismissNotification,
 } = createActionFactories();
 
-export const compileTemplate = (buffers) => async (dispatch) => {
+export const compileTemplate = () => async (dispatch, state) => {
   try {
     dispatch(startLoading());
-    const { html } = await fetchApi("/api/compile", buffers);
+    const { html } = await fetchApi("/api/compile", state.buffers);
     dispatch(setOutput(html));
   } catch (err) {
     console.error(err);

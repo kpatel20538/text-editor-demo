@@ -1,5 +1,4 @@
-const defaultTemplate = `
-import React from 'react';
+export default `import React from 'react';
 
 const NEWLINE_PATTERN = /((<br\\s*\\/?>)|(\\n\\r?)|\\r)+/;
 const WHITESPACE_PATTERN = /^(\\s|(<br\\s*\\/?>)|(\\n\\r?)|\\r)*$/;
@@ -93,42 +92,3 @@ export default ({ data }) => (
   </mjml>
 );
 `;
-
-const defaultQuery = `
-query MediaQuery($id: Int!) {
-  Media(id: $id) {
-    title {
-      userPreferred
-    }
-    description
-    siteUrl
-    season
-    seasonYear
-    bannerImage
-    coverImage {
-      large
-      color
-    }
-  }
-}
-`;
-
-const defaultVariables = `
-{
-  "id": 1
-}
-`;
-
-export default {
-  currentMode: "template",
-  buffers: {
-    template: defaultTemplate,
-    query: defaultQuery,
-    variables: defaultVariables,
-  },
-  called: false,
-  loading: false,
-  error: null,
-  notifications: [],
-  output: "",
-};

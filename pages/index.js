@@ -1,9 +1,9 @@
 import dynamic from "next/dynamic";
 import Tabs from "../components/Tabs";
 import Button from "../components/Button";
+import Notifications from "../components/Notifications";
 import { useStore } from "../model/store";
-import resolvers from "../model/resolvers";
-import initialState from "../model/initialState";
+import { reducer, initialState } from "../model/reducer";
 import {
   getAllModes,
   getCurrentMode,
@@ -12,6 +12,8 @@ import {
   getHasError,
   getIsSuccess,
   getMonacoProps,
+  getNotifications,
+  getOutputDocument,
 } from "../model/selectors";
 import {
   setCurrentBuffer,
@@ -19,19 +21,13 @@ import {
   compileTemplate,
   dismissNotification,
 } from "../model/actions";
-import Notifications from "../components/Notifications";
 
 const MonacoEditor = dynamic(() => import("react-monaco-editor"), {
   ssr: false,
 });
 
 const Home = () => {
-  const [state, dispatch] = useStore({
-    resolvers,
-    initialState,
-  });
-
-  const currentMode = getCurrentMode(state);
+  const [state, dispatch] = useStore(reducer, initialState);
 
   return (
     <main>
@@ -42,7 +38,7 @@ const Home = () => {
               <div className="buttons">
                 <Button
                   title="Compile"
-                  onClick={() => dispatch(compileTemplate(state.buffers))}
+                  onClick={() => dispatch(compileTemplate())}
                   isLoading={getIsLoading(state)}
                   isSuccess={getIsSuccess(state)}
                   isDanger={getHasError(state)}
@@ -57,20 +53,18 @@ const Home = () => {
           <div className="column is-half">
             <Tabs
               tabs={getAllModes(state)}
-              activeTab={currentMode}
+              activeTab={getCurrentMode(state)}
               onTabChange={(mode) => dispatch(setCurrentMode(mode))}
             />
             <MonacoEditor
-              key={currentMode}
+              key={getCurrentMode(state)}
               value={getCurrentBuffer(state)}
-              onChange={(buffer) =>
-                dispatch(setCurrentBuffer(buffer))
-              }
-              {...getMonacoProps(currentMode)}
+              onChange={(buffer) => dispatch(setCurrentBuffer(buffer))}
+              {...getMonacoProps(state)}
             />
           </div>
           <div className="column is-half">
-            <div dangerouslySetInnerHTML={{ __html: state.output }} />
+            <div dangerouslySetInnerHTML={{ __html: getOutputDocument(state) }} />
           </div>
         </div>
       </section>
@@ -78,7 +72,7 @@ const Home = () => {
         Data sourced from <a href="https://anilist.co">AniList GraphQL API</a>
       </footer>
       <Notifications
-        notifications={state.notifications}
+        notifications={getNotifications(state)}
         onDismiss={(idx) => dispatch(dismissNotification(idx))}
       />
       <style jsx>{`

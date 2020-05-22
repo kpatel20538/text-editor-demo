@@ -1,28 +1,21 @@
-import { useReducer } from "react";
+import { useReducer, useRef } from "react";
 
-const createAsyncDispatcher = (dispatch) => {
+export const useStore = (reducer, initialState) => {
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const stateRef = useRef(initialState);
+  stateRef.current = state;
+
   const asyncDispatch = async (action) => {
     if (typeof action === "function") {
-      await action(asyncDispatch);
+      await action(asyncDispatch, stateRef.current);
     } else if (Array.isArray(action)) {
       for (const subAction of action) {
-        await asyncDispatch(subAction);
+        await asyncDispatch(subAction, stateRef.current);
       }
     } else {
       dispatch(action);
     }
-  }
-  return asyncDispatch;
-}
+  };
 
-export const useStore = ({ resolvers, initialState }) => {
-  const [state, dispatch] = useReducer(
-    createReducer(resolvers), 
-    initialState
-  );
-
-  return [
-    state, 
-    createAsyncDispatcher(dispatch)
-  ];
+  return [state, asyncDispatch];
 };

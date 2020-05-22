@@ -1,11 +1,14 @@
 import produce from "immer";
+import initialTemplate from "./data/initialTemplate";
+import initialQuery from "./data/initialQuery";
+import initialVariables from "./data/initialVariables";
 
 const createReducer = (resolvers) => (state, { type, payload }) => {
   const resolver = resolvers[type];
   return resolver ? produce(state, (draft) => resolver(draft, payload)) : state;
 };
 
-export default createReducer({
+export const reducer = createReducer({
   setCurrentMode: (state, mode) => {
     state.currentMode = mode;
   },
@@ -33,3 +36,17 @@ export default createReducer({
     state.notifications.splice(idx, 1);
   },
 });
+
+export const initialState = {
+  currentMode: "template",
+  buffers: {
+    template: initialTemplate,
+    query: initialQuery,
+    variables: initialVariables,
+  },
+  called: false,
+  loading: false,
+  error: null,
+  notifications: [],
+  output: "",
+};

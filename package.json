@@ -29,7 +29,6 @@
     "react-dom": "^16.13.0",
     "react-icons": "^3.10.0",
     "react-monaco-editor": "^0.36.0",
-    "reselect": "^4.0.0",
     "use-debounce": "^3.4.2",
     "vm2": "^3.9.2",
     "yaml": "^1.10.0"
