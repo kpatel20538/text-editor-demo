@@ -1,12 +1,9 @@
 import dynamic from "next/dynamic";
-import AppLayout from "../components/AppLayout";
 import Tabs from "../components/Tabs";
 import Button from "../components/Button";
-import {
-  useStore,
-} from "../utils/store";
-import resolvers from '../utils/resolvers';
-import initialState from '../utils/initialState';
+import { useStore } from "../utils/store";
+import resolvers from "../utils/resolvers";
+import initialState from "../utils/initialState";
 import {
   getAllModes,
   getCurrentMode,
@@ -14,13 +11,15 @@ import {
   getIsLoading,
   getHasError,
   getIsSuccess,
-} from '../utils/selectors'
+} from "../utils/selectors";
 import {
   setCurrentBuffer,
   setCurrentMode,
-  compile,
-} from '../utils/actions'
+  compileTemplate,
+  dismissNotification,
+} from "../utils/actions";
 import { getMonacoProps } from "../utils/monaco";
+import Notifications from "../components/Notifications";
 
 const MonacoEditor = dynamic(() => import("react-monaco-editor"), {
   ssr: false,
@@ -36,33 +35,64 @@ const Home = () => {
 
   return (
     <main>
-      <div className="buttons">
-        <Button
-          title="Compile"
-          onClick={() => dispatch(compile(state.buffers))}
-          isLoading={getIsLoading(state)}
-          isSuccess={getIsSuccess(state)}
-          isDanger={getHasError(state)}
-        />
-      </div>
-      <AppLayout>
-        <div className="column is-half">
-          <Tabs
-            tabs={getAllModes(state)}
-            activeTab={currentMode}
-            onTabChange={(tab) => dispatch(setCurrentMode({ mode: tab }))}
-          />
-          <MonacoEditor
-            key={currentMode}
-            value={getCurrentBuffer(state)}
-            onChange={(value) => dispatch(setCurrentBuffer({ buffer: value }))}
-            {...getMonacoProps(currentMode)}
-          />
+      <nav className="navbar has-shadow">
+        <div className="navbar-menu">
+          <div className="navbar-end">
+            <div className="navbar-item">
+              <div className="buttons">
+                <Button
+                  title="Compile"
+                  onClick={() => dispatch(compileTemplate(state.buffers))}
+                  isLoading={getIsLoading(state)}
+                  isSuccess={getIsSuccess(state)}
+                  isDanger={getHasError(state)}
+                />
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="column is-half">
-          <div dangerouslySetInnerHTML={{ __html: state.output }} />
+      </nav>
+      
+      <section className="section">
+        <div className="container">
+          <div className="column is-half">
+            <Tabs
+              tabs={getAllModes(state)}
+              activeTab={currentMode}
+              onTabChange={(tab) => dispatch(setCurrentMode({ mode: tab }))}
+            />
+            <MonacoEditor
+              key={currentMode}
+              value={getCurrentBuffer(state)}
+              onChange={(value) =>
+                dispatch(setCurrentBuffer({ buffer: value }))
+              }
+              {...getMonacoProps(currentMode)}
+            />
+          </div>
+          <div className="column is-half">
+            <div dangerouslySetInnerHTML={{ __html: state.output }} />
+          </div>
         </div>
-      </AppLayout>
+      </section>
+      <footer className="footer"> React + GraphQL + mjml </footer>
+      <Notifications
+        notifications={state.notifications}
+        onDismiss={(idx) => dispatch(dismissNotification({ idx }))}
+      />
+      <style jsx>{`
+        main {
+          display: flex;
+          flex-direction: column;
+          min-height: 100vh;
+        }
+
+        section,
+        .container {
+          flex: 1;
+          display: flex;
+        }
+      `}</style>
     </main>
   );
 };

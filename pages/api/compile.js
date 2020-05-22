@@ -29,7 +29,7 @@ const fetchQuery = async ({ query, variables }) => {
   return data;
 };
 
-const compileComponent = async ({ template }) => {
+const compileTemplate = async ({ template }) => {
   const { code } = await transform(template, {
     presets: ["@babel/preset-env", "@babel/preset-react"],
     filename: "Template.js",
@@ -44,7 +44,7 @@ const compileComponent = async ({ template }) => {
 
 const renderTemplate = async ({ template, query, variables }) => {
   const [Component, data] = await Promise.all([
-    compileComponent({ template }),
+    compileTemplate({ template }),
     fetchQuery({ query, variables })
   ])
   const element = React.createElement(Component, { data });

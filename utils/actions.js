@@ -1,26 +1,13 @@
-import resolvers from './resolvers';
+import resolvers from "./resolvers";
+import { fetchApi } from "./sideEffects";
 
-const createActionFactories = (resolvers) => Object.fromEntries(
-  Object.keys(resolvers)
-    .map((type) => [type, (values = {}) => ({ type, ...values })])  
-);
-
-const fetchApi  = async (endpoint, body) => {
-  const response = await fetch(endpoint, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  });
-
-  if (!response.ok) {
-    throw new Error(response.statusText);
-  }
-  
-  return response.json();
-}
+const createActionFactories = (resolvers) =>
+  Object.fromEntries(
+    Object.keys(resolvers).map((type) => [
+      type,
+      (values = {}) => ({ type, ...values }),
+    ])
+  );
 
 export const {
   setCurrentMode,
@@ -28,17 +15,27 @@ export const {
   startLoading,
   endLoading,
   setOutput,
-  reportError
+  reportError,
+  pushNotification,
+  dismissNotification,
 } = createActionFactories(resolvers);
 
-export const compile = (buffers) => async (dispatch) => {
+export const compileTemplate = (buffers) => async (dispatch) => {
   try {
     dispatch(startLoading());
     const { html } = await fetchApi("/api/compile", buffers);
     dispatch(setOutput({ value: html }));
   } catch (err) {
     console.error(err);
-    dispatch(reportError({ value: "Something went wrong" }));
+    dispatch(reportError());
+    dispatch(
+      pushNotification({
+        icon: "exclamation-triangle",
+        color: "danger",
+        title: "Something went wrong",
+        description: err.toString(),
+      })
+    );
   } finally {
     dispatch(endLoading());
   }

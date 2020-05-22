@@ -129,5 +129,6 @@ export default {
   called: false,
   loading: false,
   error: null,
+  notifications: [],
   output: "",
 };

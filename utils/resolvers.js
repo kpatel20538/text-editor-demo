@@ -8,7 +8,7 @@ const setCurrentBuffer = (state, action) => {
 
 const startLoading = (state) => {
   state.loading = true;
-  state.error = null;
+  state.error = false;
 };
 
 const endLoading = (state) => {
@@ -20,8 +20,21 @@ const setOutput = (state, action) => {
   state.output = action.value;
 };
 
-const reportError = (state, action) => {
-  state.error = action.value;
+const reportError = (state) => {
+  state.error = true;
+};
+
+const pushNotification = (state, { icon, color, title, description }) => {
+  state.notifications.push({
+    icon,
+    color,
+    title,
+    description,
+  });
+};
+
+const dismissNotification = (state, action) => {
+  state.notifications.splice(action.idx, 1);
 };
 
 export default {
@@ -30,5 +43,7 @@ export default {
   startLoading,
   endLoading,
   setOutput,
-  reportError
-}
+  reportError,
+  pushNotification,
+  dismissNotification,
+};
