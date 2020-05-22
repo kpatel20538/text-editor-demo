@@ -1,62 +1,99 @@
 import dynamic from "next/dynamic";
+import Tabs from "../components/Tabs";
+import Button from "../components/Button";
+import Notifications from "../components/Notifications";
+import { useStore } from "../model/store";
+import { reducer, initialState } from "../model/reducer";
+import {
+  getAllModes,
+  getCurrentMode,
+  getCurrentBuffer,
+  getIsLoading,
+  getHasError,
+  getIsSuccess,
+  getMonacoProps,
+  getNotifications,
+  getOutputDocument,
+} from "../model/selectors";
+import {
+  setCurrentBuffer,
+  setCurrentMode,
+  compileTemplate,
+  dismissNotification,
+} from "../model/actions";
+
 const MonacoEditor = dynamic(() => import("react-monaco-editor"), {
   ssr: false,
 });
 
-import yaml from "yaml";
-import { useState, useEffect } from "react";
-
-const getWorkerUrl = (moduleId, label) => {
-  if (label === "json") return "_next/static/json.worker.js";
-  if (label === "graphql") return "_next/static/graphql.worker.js";
-  if (label === "css") return "_next/static/css.worker.js";
-  if (label === "html") return "_next/static/html.worker.js";
-  if (label === "typescript" || label === "javascript")
-    return "_next/static/ts.worker.js";
-  return "_next/static/editor.worker.js";
-};
-
 const Home = () => {
-  const [templateCode, setTemplateCode] = useState(
-    JSON.stringify({ home: 1, dom: 3 }, null, 2)
-  );
-
-  const [outputCode, setOutcodeCode] = useState("");
-  const [isDanger, setIsDanger] = useState(false);
-
-  useEffect(() => {
-    try {
-      setOutcodeCode(yaml.stringify(JSON.parse(templateCode)));
-      setIsDanger(false);
-    } catch {
-      setIsDanger(true);
-    }
-  }, [templateCode]);
+  const [state, dispatch] = useStore(reducer, initialState);
 
   return (
-    <div className="section">
-      <div className="container">
-        <div className="columns">
-          <div className="column is-half">
-            <MonacoEditor
-              language="javascript"
-              theme="vs-dark"
-              value={templateCode}
-              onChange={setTemplateCode}
-              editorDidMount={() => {
-                window.MonacoEnvironment.getWorkerUrl = getWorkerUrl;
-              }}
-              height="800px"
-            />
-          </div>
-          <div className="column is-half">
-            <div className={`message ${isDanger ? "is-danger" : ""}`}>
-              <pre className="message-body">{outputCode}</pre>
+    <main>
+      <nav className="navbar has-shadow">
+        <div className="navbar-menu">
+          <div className="navbar-end">
+            <div className="navbar-item">
+              <div className="buttons">
+                <Button
+                  title="Compile"
+                  onClick={() => dispatch(compileTemplate())}
+                  isLoading={getIsLoading(state)}
+                  isSuccess={getIsSuccess(state)}
+                  isDanger={getHasError(state)}
+                />
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </nav>
+      <section className="section">
+        <div className="container">
+          <div className="column is-half">
+            <Tabs
+              tabs={getAllModes(state)}
+              activeTab={getCurrentMode(state)}
+              onTabChange={(mode) => dispatch(setCurrentMode(mode))}
+            />
+            <MonacoEditor
+              key={getCurrentMode(state)}
+              value={getCurrentBuffer(state)}
+              onChange={(buffer) => dispatch(setCurrentBuffer(buffer))}
+              {...getMonacoProps(state)}
+            />
+          </div>
+          <div className="column is-half box">
+            <iframe sandbox="" srcDoc={getOutputDocument(state)} />
+          </div>
+        </div>
+      </section>
+      <footer className="footer">
+        Data sourced from <a href="https://anilist.co">AniList GraphQL API</a>
+      </footer>
+      <Notifications
+        notifications={getNotifications(state)}
+        onDismiss={(idx) => dispatch(dismissNotification(idx))}
+      />
+      <style jsx>{`
+        main {
+          display: flex;
+          flex-direction: column;
+          min-height: 100vh;
+        }
+
+        section,
+        .container {
+          flex: 1;
+          display: flex;
+        }
+
+        iframe {
+          width: 100%;
+          height: 100%;
+        }
+      `}</style>
+    </main>
   );
 };
 

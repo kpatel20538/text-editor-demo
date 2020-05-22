@@ -1,26 +1,24 @@
-import { Children, useState } from "react";
+import classNames from "classnames";
 
-export default ({ tabs, children }) => {
-  const [activeTab, setActiveTab] = useState(tabs[0]);
-
+export default ({ tabs, activeTab, onTabChange }) => {
   return (
-    <>
-      <div className="tabs">
-        <ul>
-          {tabs.map((tab) => (
-            <li
-              key={tab}
-              className={tab === activeTab ? "is-active" : ""}
-              onClick={() => setActiveTab(tab)}
-            >
-              <a>{tab}</a>
-            </li>
-          ))}
-        </ul>
-      </div>
-      {Children.toArray(children).find(
-        (element) => element.props.tab === activeTab
-      )}
-    </>
+    <div className="tabs">
+      <ul>
+        {tabs.map((tab) => (
+          <li
+            key={tab}
+            className={classNames({ "is-active": tab === activeTab })}
+            onClick={() => onTabChange(tab)}
+          >
+            <a>{tab}</a>
+          </li>
+        ))}
+      </ul>
+      <style jsx>{`
+        li {
+          text-transform: capitalize;
+        }
+      `}</style>
+    </div>
   );
 };
