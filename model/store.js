@@ -1,12 +1,4 @@
 import { useReducer } from "react";
-import produce from "immer";
-
-const createReducer = (resolvers) => (state, action) => {
-  const resolver = resolvers[action.type];
-  return resolver
-    ? produce(state, (draft) => resolver(draft, action))
-    : state;
-}
 
 const createAsyncDispatcher = (dispatch) => {
   const asyncDispatch = async (action) => {

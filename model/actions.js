@@ -1,13 +1,10 @@
-import resolvers from "./resolvers";
 import { fetchApi } from "./sideEffects";
 
-const createActionFactories = (resolvers) =>
-  Object.fromEntries(
-    Object.keys(resolvers).map((type) => [
-      type,
-      (values = {}) => ({ type, ...values }),
-    ])
-  );
+const createActionFactories = () =>
+  new Proxy(Object.freeze({}), {
+    has: () => true,
+    get: (_, type) => (payload) => ({ type, payload }),
+  });
 
 export const {
   setCurrentMode,
@@ -18,24 +15,24 @@ export const {
   reportError,
   pushNotification,
   dismissNotification,
-} = createActionFactories(resolvers);
+} = createActionFactories();
 
 export const compileTemplate = (buffers) => async (dispatch) => {
   try {
     dispatch(startLoading());
     const { html } = await fetchApi("/api/compile", buffers);
-    dispatch(setOutput({ value: html }));
+    dispatch(setOutput(html));
   } catch (err) {
     console.error(err);
-    dispatch(reportError());
-    dispatch(
+    dispatch([
+      reportError(),
       pushNotification({
         icon: "exclamation-triangle",
         color: "danger",
         title: "Something went wrong",
         description: err.toString(),
-      })
-    );
+      }),
+    ]);
   } finally {
     dispatch(endLoading());
   }

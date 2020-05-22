@@ -1,49 +1,35 @@
-const setCurrentMode = (state, action) => {
-  state.currentMode = action.mode;
+import produce from "immer";
+
+const createReducer = (resolvers) => (state, { type, payload }) => {
+  const resolver = resolvers[type];
+  return resolver ? produce(state, (draft) => resolver(draft, payload)) : state;
 };
 
-const setCurrentBuffer = (state, action) => {
-  state.buffers[state.currentMode] = action.buffer;
-};
-
-const startLoading = (state) => {
-  state.loading = true;
-  state.error = false;
-};
-
-const endLoading = (state) => {
-  state.called = true;
-  state.loading = false;
-};
-
-const setOutput = (state, action) => {
-  state.output = action.value;
-};
-
-const reportError = (state) => {
-  state.error = true;
-};
-
-const pushNotification = (state, { icon, color, title, description }) => {
-  state.notifications.push({
-    icon,
-    color,
-    title,
-    description,
-  });
-};
-
-const dismissNotification = (state, action) => {
-  state.notifications.splice(action.idx, 1);
-};
-
-export default {
-  setCurrentMode,
-  setCurrentBuffer,
-  startLoading,
-  endLoading,
-  setOutput,
-  reportError,
-  pushNotification,
-  dismissNotification,
-};
+export default createReducer({
+  setCurrentMode: (state, mode) => {
+    state.currentMode = mode;
+  },
+  setCurrentBuffer: (state, buffer) => {
+    state.buffers[state.currentMode] = buffer;
+  },
+  startLoading: (state) => {
+    state.loading = true;
+    state.error = false;
+  },
+  endLoading: (state) => {
+    state.called = true;
+    state.loading = false;
+  },
+  setOutput: (state, html) => {
+    state.output = html;
+  },
+  reportError: (state) => {
+    state.error = true;
+  },
+  pushNotification: (state, notification) => {
+    state.notifications.push(notification);
+  },
+  dismissNotification: (state, idx) => {
+    state.notifications.splice(idx, 1);
+  },
+});

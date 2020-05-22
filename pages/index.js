@@ -58,13 +58,13 @@ const Home = () => {
             <Tabs
               tabs={getAllModes(state)}
               activeTab={currentMode}
-              onTabChange={(tab) => dispatch(setCurrentMode({ mode: tab }))}
+              onTabChange={(mode) => dispatch(setCurrentMode(mode))}
             />
             <MonacoEditor
               key={currentMode}
               value={getCurrentBuffer(state)}
-              onChange={(value) =>
-                dispatch(setCurrentBuffer({ buffer: value }))
+              onChange={(buffer) =>
+                dispatch(setCurrentBuffer(buffer))
               }
               {...getMonacoProps(currentMode)}
             />
@@ -79,7 +79,7 @@ const Home = () => {
       </footer>
       <Notifications
         notifications={state.notifications}
-        onDismiss={(idx) => dispatch(dismissNotification({ idx }))}
+        onDismiss={(idx) => dispatch(dismissNotification(idx))}
       />
       <style jsx>{`
         main {
